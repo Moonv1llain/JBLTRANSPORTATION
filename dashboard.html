@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><span data-t="CO_NAME">CO_NAME</span> | <span data-t="CO_TAG">CO_TAG</span></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --g:#006847; --r:#CE1126; --white:#EEEEE9;
+  --black:#050505; --dim:#0c0c0c; --line:rgba(255,255,255,.055);
+  --ease-out-expo:cubic-bezier(.16,1,.3,1);
+  --ease-in-out-quart:cubic-bezier(.76,0,.24,1);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--black); color:var(--white);
+  overflow-x:hidden; cursor:none;
+}
+
+/* ── CURSOR ─────────────────────────────── */
+#cur{
+  position:fixed; width:6px; height:6px;
+  background:var(--r); border-radius:50%;
+  pointer-events:none; z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:width .2s var(--ease-out-expo), height .2s var(--ease-out-expo), background .3s;
+  mix-blend-mode:normal;
+}
+#cur-ring{
+  position:fixed; width:32px; height:32px;
+  border:1px solid rgba(255,255,255,.2); border-radius:50%;
+  pointer-events:none; z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:width .4s var(--ease-out-expo), height .4s var(--ease-out-expo), border-color .3s;
+}
+body.cur-hover #cur{ width:14px; height:14px; background:var(--white); }
+body.cur-hover #cur-ring{ width:48px; height:48px; border-color:rgba(255,255,255,.5); }
+
+/* ── FLAG BAR ────────────────────────────── */
+.flag-bar{
+  position:fixed; top:0; left:0; right:0; height:3px; z-index:300;
+  background:linear-gradient(90deg,var(--g) 0 33.3%,#fff 33.3% 66.6%,var(--r) 66.6% 100%);
+}
+
+/* ── NAV ─────────────────────────────────── */
+nav{
+  position:fixed; top:3px; left:0; right:0; z-index:200;
+  height:66px; display:flex; align-items:center; justify-content:space-between;
+  padding:0 52px;
+  background:rgba(5,5,5,0); /* starts transparent */
+  backdrop-filter:blur(0px);
+  border-bottom:1px solid transparent;
+  transition:background .5s, backdrop-filter .5s, border-color .5s;
+}
+nav.scrolled{
+  background:rgba(5,5,5,.93);
+  backdrop-filter:blur(20px);
+  border-bottom-color:var(--line);
+}
+.nav-left{display:flex;align-items:center;gap:14px}
+.nav-logo{height:36px;width:auto;filter:drop-shadow(0 0 10px rgba(206,17,38,.3));display:block}
+.nav-brand{display:flex;flex-direction:column;line-height:1;gap:3px}
+.brand-name{font-family:'Anton',sans-serif;font-size:21px;letter-spacing:.12em;color:var(--white)}
+.brand-sub{font-family:'Teko',sans-serif;font-size:9px;font-weight:400;letter-spacing:.55em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.nav-links{display:flex;align-items:center;gap:32px;list-style:none}
+.nav-links a{
+  font-family:'Teko',sans-serif; font-size:13px; font-weight:500;
+  letter-spacing:.3em; text-transform:uppercase;
+  color:rgba(255,255,255,.45); text-decoration:none;
+  transition:color .25s; position:relative; padding-bottom:3px;
+}
+.nav-links a::after{
+  content:''; position:absolute; bottom:0; left:0; right:0;
+  height:1px; transform:scaleX(0); transform-origin:left; transition:transform .35s var(--ease-out-expo);
+}
+.nav-links a.a1::after{background:var(--g)}
+.nav-links a.a2::after{background:var(--r)}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-cta{
+  font-family:'Teko',sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:.3em; text-transform:uppercase; text-decoration:none;
+  color:var(--white); background:var(--r);
+  padding:10px 22px;
+  clip-path:polygon(7px 0%,100% 0%,calc(100% - 7px) 100%,0% 100%);
+  transition:background .3s, transform .2s;
+  display:inline-block;
+}
+.nav-cta:hover{background:var(--g); transform:translateY(-1px)}
+
+/* ── HERO ────────────────────────────────── */
+.hero{
+  min-height:100vh; padding-top:69px;
+  display:grid; grid-template-columns:1fr 1fr;
+  position:relative; overflow:hidden; width:100%;
+}
+
+/* animated grain overlay */
+.hero-grain{
+  position:absolute; inset:0; z-index:1; pointer-events:none; opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain-shift 8s steps(1) infinite;
+}
+@keyframes grain-shift{
+  0%{background-position:0 0}10%{background-position:-5% -10%}20%{background-position:-15% 5%}
+  30%{background-position:7% -25%}40%{background-position:-5% 25%}50%{background-position:-15% 10%}
+  60%{background-position:15% 0}70%{background-position:0 15%}80%{background-position:3% 35%}
+  90%{background-position:-10% 10%}100%{background-position:0 0}
+}
+
+/* subtle grid */
+.hero-grid{
+  position:absolute; inset:0; z-index:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 50%,black 30%,transparent 100%);
+}
+
+/* ambient glows */
+.hero-glow-g{
+  position:absolute; left:-10vw; top:20%; z-index:0;
+  width:50vw; height:60vh;
+  background:radial-gradient(ellipse,rgba(0,104,71,.12) 0%,transparent 65%);
+  pointer-events:none;
+  animation:glow-breathe 8s ease-in-out infinite;
+}
+.hero-glow-r{
+  position:absolute; right:-5vw; bottom:10%; z-index:0;
+  width:45vw; height:55vh;
+  background:radial-gradient(ellipse,rgba(206,17,38,.12) 0%,transparent 65%);
+  pointer-events:none;
+  animation:glow-breathe 8s ease-in-out infinite .4s reverse;
+}
+@keyframes glow-breathe{
+  0%,100%{opacity:.6;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.08)}
+}
+
+.hero-left{
+  position:relative; z-index:2;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:80px 0 80px 72px;
+}
+
+/* staggered load-in */
+.hero-eyebrow{
+  font-family:'Teko',sans-serif; font-size:13px; font-weight:600;
+  letter-spacing:.5em; text-transform:uppercase; color:rgba(255,255,255,.75);
+  margin-bottom:24px;
+  opacity:0; transform:translateY(16px);
+  animation:hero-in .9s var(--ease-out-expo) .1s forwards;
+}
+.hero-title{
+  font-family:'Anton',sans-serif; font-size:clamp(100px,13vw,180px);
+  line-height:.88; letter-spacing:.02em; margin-bottom:32px;
+  opacity:0; transform:translateY(24px);
+  animation:hero-in 1s var(--ease-out-expo) .25s forwards;
+}
+.hero-title .line1{display:block;color:var(--white)}
+.hero-title .line2{display:block;color:var(--r)}
+
+.hero-divider{
+  display:flex; align-items:center; gap:14px; margin-bottom:28px;
+  opacity:0; animation:hero-in .8s var(--ease-out-expo) .4s forwards;
+}
+.hero-divider-line{
+  height:1px; flex:1; max-width:60px;
+  background:linear-gradient(90deg,rgba(255,255,255,.18),transparent);
+}
+.hero-divider span{
+  font-family:'Teko',sans-serif; font-size:12px; font-weight:500;
+  letter-spacing:.4em; text-transform:uppercase; color:rgba(255,255,255,.65);
+  white-space:nowrap;
+}
+
+.hero-desc{
+  font-size:15px; font-weight:300; line-height:1.85;
+  color:rgba(255,255,255,.35); max-width:360px; margin-bottom:48px;
+  opacity:0; animation:hero-in .8s var(--ease-out-expo) .5s forwards;
+}
+.hero-actions{
+  display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  opacity:0; animation:hero-in .8s var(--ease-out-expo) .65s forwards;
+}
+
+@keyframes hero-in{
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* buttons */
+.btn-primary{
+  font-family:'Teko',sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:.35em; text-transform:uppercase; text-decoration:none;
+  color:var(--black); background:var(--white);
+  padding:15px 38px;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  display:inline-flex; align-items:center; gap:10px;
+  position:relative; overflow:hidden; transition:color .4s;
+}
+.btn-primary::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,var(--g),var(--r));
+  transform:translateX(-100%); transition:transform .55s var(--ease-out-expo);
+}
+.btn-primary:hover::before{transform:translateX(0)}
+.btn-primary:hover{color:var(--white)}
+.btn-primary span{position:relative;z-index:1}
+
+.btn-ghost{
+  font-family:'Teko',sans-serif; font-size:12px; font-weight:500;
+  letter-spacing:.35em; text-transform:uppercase; text-decoration:none;
+  color:rgba(255,255,255,.35); border:1px solid rgba(255,255,255,.08);
+  padding:14px 30px; transition:color .3s, border-color .3s, transform .2s;
+}
+.btn-ghost:hover{color:var(--white);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+
+/* HERO RIGHT */
+.hero-right{
+  position:relative; z-index:2;
+  display:flex; align-items:center; justify-content:center;
+}
+.logo-frame{
+  position:relative; width:520px; height:520px;
+  display:flex; align-items:center; justify-content:center;
+}
+.logo-ring{position:absolute;inset:-20px;border-radius:50%;border:1px dashed rgba(255,255,255,.06);animation:spin 35s linear infinite}
+.logo-ring-2{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(255,255,255,.03);animation:spin 22s linear infinite reverse}
+.logo-ring-3{position:absolute;inset:60px;border-radius:50%;border:1px dashed rgba(206,17,38,.1);animation:spin 18s linear infinite}
+.logo-glow-g{position:absolute;left:-80px;top:50%;transform:translateY(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(0,104,71,.2) 0%,transparent 70%);pointer-events:none}
+.logo-glow-r{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(206,17,38,.2) 0%,transparent 70%);pointer-events:none}
+.hero-logo-img{
+  width:420px; height:420px; object-fit:contain; position:relative; z-index:2;
+  filter:drop-shadow(0 0 70px rgba(206,17,38,.3)) drop-shadow(0 0 35px rgba(0,104,71,.18));
+  animation:float 7s ease-in-out infinite;
+  opacity:0; animation:logo-in 1.2s var(--ease-out-expo) .3s forwards, float 7s ease-in-out 1.5s infinite;
+}
+@keyframes logo-in{to{opacity:1}}
+.tick{position:absolute;top:50%;left:50%;transform-origin:0 0;pointer-events:none}
+.tick::after{content:'';display:block;width:1px;height:8px;background:rgba(255,255,255,.08);position:absolute;top:-222px;left:0}
+
+/* mobile logo */
+.hero-mobile-logo{display:none}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* scroll hint */
+.scroll-hint{
+  position:absolute; bottom:32px; left:72px; z-index:3;
+  display:flex; align-items:center; gap:12px;
+  opacity:0; animation:hero-in .8s var(--ease-out-expo) 1s forwards;
+}
+.scroll-hint span{font-family:'Teko',sans-serif;font-size:9px;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.15)}
+.scroll-track{width:40px;height:1px;background:rgba(255,255,255,.1);position:relative;overflow:hidden}
+.scroll-thumb{position:absolute;left:0;top:0;width:40px;height:100%;background:rgba(255,255,255,.4);transform:translateX(-100%);animation:scroll-run 2.4s ease-in-out infinite}
+@keyframes scroll-run{0%{transform:translateX(-100%)}50%{transform:translateX(0%)}100%{transform:translateX(100%)}}
+
+/* ── STATS ───────────────────────────────── */
+.stats{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  background:var(--dim); position:relative; overflow:hidden;
+}
+.stats::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, rgba(0,104,71,.04) 0%, transparent 50%, rgba(206,17,38,.04) 100%);
+  pointer-events:none;
+}
+.stat{
+  padding:44px 36px; border-right:1px solid var(--line);
+  position:relative; overflow:hidden; transition:background .4s;
+  cursor:default;
+}
+.stat:last-child{border-right:none}
+.stat-bar{
+  position:absolute; bottom:0; left:0; right:0; height:2px;
+  transform:scaleX(0); transform-origin:left; transition:transform .6s var(--ease-out-expo);
+}
+.stat.sg .stat-bar{background:linear-gradient(90deg,var(--g),rgba(0,104,71,.3))}
+.stat.sw .stat-bar{background:linear-gradient(90deg,rgba(255,255,255,.8),transparent)}
+.stat.sr .stat-bar{background:linear-gradient(90deg,var(--r),rgba(206,17,38,.3))}
+.stat.sb .stat-bar{background:linear-gradient(90deg,#3b82f6,rgba(59,130,246,.3))}
+.stat:hover{background:rgba(255,255,255,.015)}
+.stat:hover .stat-bar{transform:scaleX(1)}
+.stat-n{
+  font-family:'Anton',sans-serif; font-size:50px;
+  letter-spacing:.02em; line-height:1; margin-bottom:8px;
+}
+.stat.sg .stat-n{color:var(--g)}
+.stat.sw .stat-n{color:#fff}
+.stat.sr .stat-n{color:var(--r)}
+.stat.sb .stat-n{color:#3b82f6}
+.stat-l{font-family:'Teko',sans-serif;font-size:10px;font-weight:400;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+
+/* ── SERVICES ────────────────────────────── */
+.services-section{padding:120px 72px;max-width:1300px;margin:0 auto}
+.sec-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:72px;gap:40px}
+.sec-label{font-family:'Teko',sans-serif;font-size:10px;font-weight:600;letter-spacing:.65em;text-transform:uppercase;color:var(--g);margin-bottom:14px}
+.sec-title{font-family:'Anton',sans-serif;font-size:clamp(48px,6vw,72px);line-height:.88;letter-spacing:.02em}
+.sec-body{font-size:14px;font-weight:300;line-height:1.85;color:rgba(255,255,255,.32);max-width:300px}
+
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.svc-card{
+  background:var(--dim); padding:52px 44px;
+  position:relative; overflow:hidden;
+  transition:background .5s, transform .4s var(--ease-out-expo);
+}
+.svc-card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  transform:scaleX(0); transform-origin:left; transition:transform .55s var(--ease-out-expo);
+}
+.svc-card.cg::before{background:linear-gradient(90deg,var(--g),rgba(0,104,71,.3))}
+.svc-card.cw::before{background:linear-gradient(90deg,rgba(255,255,255,.7),transparent)}
+.svc-card.cr::before{background:linear-gradient(90deg,var(--r),rgba(206,17,38,.3))}
+/* inner glow on hover */
+.svc-card::after{
+  content:''; position:absolute; inset:0; opacity:0;
+  transition:opacity .5s;
+}
+.svc-card.cg::after{background:radial-gradient(ellipse at 0% 0%,rgba(0,104,71,.06),transparent 60%)}
+.svc-card.cr::after{background:radial-gradient(ellipse at 0% 0%,rgba(206,17,38,.06),transparent 60%)}
+.svc-card:hover::before{transform:scaleX(1)}
+.svc-card:hover::after{opacity:1}
+.svc-card:hover{background:#0f0f0f;transform:translateY(-2px)}
+
+.svc-num{font-family:'Anton',sans-serif;font-size:80px;position:absolute;top:28px;right:28px;color:rgba(255,255,255,.025);line-height:1;pointer-events:none}
+.svc-icon{font-size:26px;margin-bottom:28px;display:block}
+.svc-title{font-family:'Teko',sans-serif;font-size:21px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;color:var(--white)}
+.svc-body{font-size:13.5px;font-weight:300;line-height:1.8;color:rgba(255,255,255,.3)}
+.svc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:28px}
+.svc-tag{
+  font-family:'Teko',sans-serif;font-size:9px;font-weight:500;letter-spacing:.3em;
+  text-transform:uppercase;padding:4px 10px;
+  border:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.25);
+  transition:border-color .3s, color .3s;
+}
+.svc-card:hover .svc-tag{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.45)}
+
+/* ── ROUTE ───────────────────────────────── */
+.route-section{
+  background:var(--dim);
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:80px 72px; position:relative; overflow:hidden;
+}
+.route-bg-text{
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Anton',sans-serif; font-size:clamp(120px,22vw,280px);
+  color:rgba(255,255,255,.012); letter-spacing:.2em;
+  white-space:nowrap; pointer-events:none; user-select:none;
+}
+.route-lbl{
+  font-family:'Teko',sans-serif;font-size:10px;font-weight:500;
+  letter-spacing:.65em;text-transform:uppercase;color:rgba(255,255,255,.18);
+  text-align:center;margin-bottom:52px;position:relative;z-index:2;
+}
+.route-inner{position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
+.r-city{text-align:center;padding:0 44px}
+.r-dot{width:10px;height:10px;border-radius:50%;margin:0 auto 10px;position:relative}
+.r-dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;opacity:0;transition:opacity .3s}
+.dg{background:var(--g);box-shadow:0 0 14px rgba(0,104,71,.6)}
+.dg::after{background:rgba(0,104,71,.15)}
+.dw{background:#fff;box-shadow:0 0 14px rgba(255,255,255,.4)}
+.dr{background:var(--r);box-shadow:0 0 14px rgba(206,17,38,.6)}
+.db{background:#3b82f6;box-shadow:0 0 14px rgba(59,130,246,.5)}
+.r-city:hover .r-dot::after{opacity:1}
+.r-name{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.05em;margin-bottom:4px;transition:color .3s}
+.r-state{font-family:'Teko',sans-serif;font-size:10px;font-weight:400;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.r-city:hover .r-name{color:rgba(255,255,255,.7)}
+.r-arrow{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:6px}
+.r-line{width:100%;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.25),rgba(255,255,255,.06));position:relative}
+.r-line::after{content:'▸';position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:7px;color:rgba(255,255,255,.25)}
+.r-lbl{font-family:'Teko',sans-serif;font-size:8px;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.15)}
+
+/* ── QUOTE ───────────────────────────────── */
+.quote-section{padding:140px 72px}
+.quote-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:96px;align-items:start}
+.q-left .sec-label{margin-bottom:12px}
+.q-title{font-family:'Anton',sans-serif;font-size:clamp(52px,5.5vw,72px);line-height:.88;letter-spacing:.02em;margin-bottom:24px}
+.q-body{font-size:14px;font-weight:300;line-height:1.85;color:rgba(255,255,255,.32);margin-bottom:48px}
+.q-info{display:flex;flex-direction:column;gap:20px}
+.qi-row{display:flex;align-items:flex-start;gap:14px}
+.qi-icon{
+  width:36px;height:36px;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;justify-content:center;font-size:13px;
+  transition:border-color .3s, background .3s;
+}
+.qi-row:hover .qi-icon{border-color:var(--g);background:rgba(0,104,71,.08)}
+.qi-lbl{font-family:'Teko',sans-serif;font-size:9px;font-weight:500;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:3px}
+.qi-val{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.75);transition:color .3s}
+.qi-row:hover .qi-val{color:var(--white)}
+
+/* form */
+.q-form{
+  background:rgba(255,255,255,.02);
+  padding:52px;
+  border:1px solid var(--line);
+  position:relative;
+  backdrop-filter:blur(4px);
+}
+.q-form::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--g) 0 33%,#fff 33% 66%,var(--r) 66% 100%);
+}
+/* form glow corner */
+.q-form::after{
+  content:''; position:absolute; top:0; right:0;
+  width:120px; height:120px;
+  background:radial-gradient(circle at top right, rgba(206,17,38,.06), transparent 70%);
+  pointer-events:none;
+}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
+.f-field{display:flex;flex-direction:column;gap:7px}
+.f-field.full{grid-column:1/-1}
+.f-field label{
+  font-family:'Teko',sans-serif;font-size:9px;font-weight:600;
+  letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.22);
+  transition:color .3s;
+}
+.f-field:focus-within label{color:var(--g)}
+.f-field input,.f-field select,.f-field textarea{
+  background:transparent; border:none;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding:11px 0; color:var(--white);
+  font-family:'DM Sans',sans-serif; font-size:14px; font-weight:300;
+  outline:none; appearance:none; transition:border-color .3s;
+}
+.f-field input::placeholder,.f-field textarea::placeholder{color:rgba(255,255,255,.15)}
+.f-field input:focus,.f-field textarea:focus{border-bottom-color:var(--g)}
+.f-field select{color:rgba(255,255,255,.35);cursor:none}
+.f-field select option{background:#111;color:#fff}
+.f-field textarea{resize:none;height:90px}
+.f-submit{
+  margin-top:32px; width:100%; border:none;
+  background:var(--white); color:var(--black);
+  font-family:'Teko',sans-serif; font-size:12px; font-weight:700;
+  letter-spacing:.4em; text-transform:uppercase;
+  padding:17px; cursor:none;
+  clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  position:relative; overflow:hidden; transition:color .4s, transform .2s;
+}
+.f-submit::before{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(90deg,var(--g),var(--r));
+  transform:translateX(-100%); transition:transform .55s var(--ease-out-expo);
+}
+.f-submit span{position:relative;z-index:1}
+.f-submit:hover::before{transform:translateX(0)}
+.f-submit:hover{color:#fff;transform:translateY(-1px)}
+
+/* ── FOOTER ──────────────────────────────── */
+footer{
+  background:var(--dim);
+  border-top:1px solid var(--line);
+  padding:56px 72px 36px;
+  position:relative; overflow:hidden;
+}
+footer::before{
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--g) 30%,var(--r) 70%,transparent);
+  opacity:.3;
+}
+.footer-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:32px;max-width:1300px;margin:0 auto}
+.footer-brand{display:flex;align-items:center;gap:14px}
+.footer-brand img{height:44px;opacity:.65;filter:drop-shadow(0 0 8px rgba(206,17,38,.25));transition:opacity .3s}
+.footer-brand:hover img{opacity:.9}
+.footer-name{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:.1em;color:rgba(255,255,255,.45);transition:color .3s}
+.footer-brand:hover .footer-name{color:rgba(255,255,255,.7)}
+.footer-locs{font-family:'Teko',sans-serif;font-size:9px;font-weight:400;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.16);margin-top:8px}
+.footer-right{text-align:right}
+.footer-dots{display:flex;gap:4px;align-items:center;justify-content:flex-end;margin-bottom:10px}
+.fdot{width:7px;height:7px;border-radius:50%}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.15);letter-spacing:.06em}
+
+/* ── TRUST STRIP ─────────────────────────── */
+.trust-strip{
+  background:var(--black);
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  padding:40px 72px;
+}
+.trust-inner{
+  max-width:1300px; margin:0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:24px;
+}
+.trust-item{display:flex;align-items:center;gap:14px}
+.trust-icon{
+  width:32px; height:32px; flex-shrink:0;
+  border-radius:50%; border:1px solid rgba(0,104,71,.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:var(--g);
+  background:rgba(0,104,71,.08);
+}
+.trust-lbl{font-family:'Teko',sans-serif;font-size:9px;font-weight:600;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:3px}
+.trust-val{font-size:13px;font-weight:500;color:rgba(255,255,255,.75)}
+.trust-sep{width:1px;height:36px;background:var(--line);flex-shrink:0}
+@media(max-width:960px){
+  .trust-strip{padding:36px 24px}
+  .trust-inner{gap:20px}
+  .trust-sep{display:none}
+  .trust-item{flex:1;min-width:140px}
+}
+
+/* ── FOOTER CONTACT ──────────────────────── */
+.footer-mid{display:flex;flex-direction:column;gap:10px}
+.footer-contact-row{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.35)}
+.footer-contact-row a{color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s}
+.footer-contact-row a:hover{color:var(--white)}
+.fci{font-size:12px;opacity:.5}
+
+/* ── REVEAL ──────────────────────────────── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .85s var(--ease-out-expo),transform .85s var(--ease-out-expo)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ──────────────────────────── */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr;width:100vw}
+  .hero-right{display:none!important}
+  .nav-logo{display:none}
+  .hero-left{padding:48px 24px 80px;align-items:center;text-align:center;width:100%}
+  .hero-title{font-size:15vw;width:100%}
+  .hero-eyebrow,.hero-desc{text-align:center}
+  .hero-desc{max-width:100%}
+  .hero-divider{justify-content:center}
+  .hero-actions{justify-content:center}
+  .hero-mobile-logo{
+    display:flex;align-items:center;justify-content:center;
+    width:100%;margin-bottom:32px;
+  }
+  .hero-mobile-logo img{
+    width:55vw;max-width:240px;height:auto;object-fit:contain;
+    filter:drop-shadow(0 0 40px rgba(206,17,38,.4)) drop-shadow(0 0 16px rgba(0,104,71,.22));
+    animation:float 7s ease-in-out infinite;
+  }
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:1fr}
+  .route-inner{flex-direction:column;gap:20px;text-align:center}
+  .r-arrow{transform:rotate(90deg)}
+  .r-city{padding:0 20px}
+  .quote-inner{grid-template-columns:1fr;gap:52px}
+  .f-row{grid-template-columns:1fr}
+  nav{padding:0 24px}
+  .services-section{padding:80px 24px}
+  .quote-section{padding:80px 24px}
+  footer{padding:44px 24px 32px}
+  .route-section{padding:60px 24px}
+  .scroll-hint{left:50%;transform:translateX(-50%)}
+  .sec-header{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:600px){
+  .nav-links li:not(:last-child){display:none}
+  .q-form{padding:32px 20px}
+  .stat{padding:36px 24px}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+<div class="flag-bar"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-left">
+    <img src="https://i.postimg.cc/WpZLKFqy/mexicoflagonly.png" alt="JBL" class="nav-logo">
+    <div class="nav-brand">
+      <span class="brand-name">JBL TRANSPORT</span>
+      <span class="brand-sub"><span data-t="CO_TAG">CO_TAG</span></span>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#services" class="a1">Services</a></li>
+    <li><a href="#routes" class="a2">Routes</a></li>
+    <li><a href="#contact" class="nav-cta">Get Quote</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-grain"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow-g"></div>
+  <div class="hero-glow-r"></div>
+
+  <div class="hero-left">
+    <!-- mobile logo -->
+    <div class="hero-mobile-logo">
+      <img src="https://i.postimg.cc/WpZLKFqy/mexicoflagonly.png" alt="JBL Logo">
+    </div>
+
+    <div class="hero-eyebrow"><span data-t="H_EYE">H_EYE</span></div>
+
+    <h1 class="hero-title">
+      <span class="line1"><span data-t="H_L1">H_L1</span></span>
+      <span class="line2"><span data-t="H_L2">H_L2</span></span>
+    </h1>
+
+    <div class="hero-divider">
+      <div class="hero-divider-line"></div>
+      <span><span data-t="H_DIV">H_DIV</span></span>
+      <div class="hero-divider-line" style="background:linear-gradient(270deg,rgba(255,255,255,.18),transparent)"></div>
+    </div>
+
+    <p class="hero-desc"><span data-t="H_DESC">H_DESC</span></p>
+
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">
+        <span><span data-t="H_BTN1">H_BTN1</span></span><span>→</span>
+      </a>
+      <a href="#services" class="btn-ghost"><span data-t="H_BTN2">H_BTN2</span></a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="logo-frame">
+      <div class="logo-glow-g"></div>
+      <div class="logo-glow-r"></div>
+      <div class="logo-ring"></div>
+      <div class="logo-ring-2"></div>
+      <div class="logo-ring-3"></div>
+      <div id="ticks"></div>
+      <img src="https://i.postimg.cc/WpZLKFqy/mexicoflagonly.png" alt="JBL Logo" class="hero-logo-img">
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-track"><div class="scroll-thumb"></div></div>
+  </div>
+</header>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat sg reveal">
+    <div class="stat-n" data-count="163">0</div>
+    <div class="stat-l"><span data-t="S1L">S1L</span></div>
+    <div class="stat-bar"></div>
+  </div>
+  <div class="stat sw reveal" style="transition-delay:.08s">
+    <div class="stat-n">$1M</div>
+    <div class="stat-l"><span data-t="S2L">S2L</span></div>
+    <div class="stat-bar"></div>
+  </div>
+  <div class="stat sr reveal" style="transition-delay:.16s">
+    <div class="stat-n" data-count="702102">0</div>
+    <div class="stat-l"><span data-t="S3L">S3L</span></div>
+    <div class="stat-bar"></div>
+  </div>
+  <div class="stat sb reveal" style="transition-delay:.24s">
+    <div class="stat-n">24/7</div>
+    <div class="stat-l"><span data-t="S4L">S4L</span></div>
+    <div class="stat-bar"></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services" class="services-section">
+  <div class="sec-header reveal">
+    <div>
+      <div class="sec-label"><span data-t="SV_LBL">SV_LBL</span></div>
+      <h2 class="sec-title"><span data-t="SV_TTL">SV_TTL</span></h2>
+    </div>
+    <p class="sec-body">Interstate<span data-t="SV_INTRO">SV_INTRO</span></p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card cg reveal">
+      <span class="svc-num">01</span>
+      <span class="svc-icon">📦</span>
+      <div class="svc-title"><span data-t="SV1T">SV1T</span></div>
+      <p class="svc-body">Full and partial<span data-t="SV1B">SV1B</span></p>
+      <div class="svc-tags"><span class="svc-tag">FTL</span><span class="svc-tag">LTL</span><span class="svc-tag">Dry Van</span><span class="svc-tag">Interstate</span></div>
+    </div>
+    <div class="svc-card cw reveal" style="transition-delay:.1s">
+      <span class="svc-num">02</span>
+      <span class="svc-icon">🏗️</span>
+      <div class="svc-title"><span data-t="SV2T">SV2T</span></div>
+      <p class="svc-body">Lumber, drywall<span data-t="SV2B">SV2B</span></p>
+      <div class="svc-tags"><span class="svc-tag">Flatbed</span><span class="svc-tag">Construction</span><span class="svc-tag">Time-Sensitive</span></div>
+    </div>
+    <div class="svc-card cr reveal" style="transition-delay:.2s">
+      <span class="svc-num">03</span>
+      <span class="svc-icon">🔩</span>
+      <div class="svc-title"><span data-t="SV3T">SV3T</span></div>
+      <p class="svc-body">Coil, sheet<span data-t="SV3B">SV3B</span></p>
+      <div class="svc-tags"><span class="svc-tag">Steel Coil</span><span class="svc-tag">Flatbed</span><span class="svc-tag">Secured Load</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip reveal">
+  <div class="trust-inner">
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      <div>
+        <div class="trust-lbl"><span data-t="T1L">T1L</span></div>
+        <div class="trust-val"><span data-t="T1V">T1V</span></div>
+      </div>
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      <div>
+        <div class="trust-lbl"><span data-t="T2L">T2L</span></div>
+        <div class="trust-val"><span data-t="T2V">T2V</span></div>
+      </div>
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      <div>
+        <div class="trust-lbl"><span data-t="T3L">T3L</span></div>
+        <div class="trust-val"><span data-t="T3V">T3V</span></div>
+      </div>
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      <div>
+        <div class="trust-lbl"><span data-t="T4L">T4L</span></div>
+        <div class="trust-val"><span data-t="T4V">T4V</span></div>
+      </div>
+    </div>
+    <div class="trust-sep"></div>
+    <div class="trust-item">
+      <div class="trust-icon">✓</div>
+      <div>
+        <div class="trust-lbl"><span data-t="T5L">T5L</span></div>
+        <div class="trust-val"><span data-t="T5V">T5V</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROUTES -->
+<div id="routes" class="route-section reveal">
+  <div class="route-bg-text">ROUTE</div>
+  <div class="route-lbl"><span data-t="RT_LBL">RT_LBL</span></div>
+  <div class="route-inner">
+    <div class="r-city"><div class="r-dot dg"></div><div class="r-name"><span data-t="R1N">R1N</span></div><div class="r-state"><span data-t="R1S">R1S</span></div></div>
+    <div class="r-arrow"><div class="r-line"></div><div class="r-lbl"><span data-t="R1A">R1A</span></div></div>
+    <div class="r-city"><div class="r-dot dw"></div><div class="r-name"><span data-t="R2N">R2N</span></div><div class="r-state"><span data-t="R2S">R2S</span></div></div>
+    <div class="r-arrow"><div class="r-line"></div><div class="r-lbl"><span data-t="R2A">R2A</span></div></div>
+    <div class="r-city"><div class="r-dot dr"></div><div class="r-name"><span data-t="R3N">R3N</span></div><div class="r-state"><span data-t="R3S">R3S</span></div></div>
+    <div class="r-arrow"><div class="r-line"></div><div class="r-lbl"><span data-t="R3A">R3A</span></div></div>
+    <div class="r-city"><div class="r-dot db"></div><div class="r-name"><span data-t="R4N">R4N</span></div><div class="r-state"><span data-t="R4S">R4S</span></div></div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<section id="contact" class="quote-section">
+  <div class="quote-inner">
+    <div class="q-left reveal">
+      <div class="sec-label"><span data-t="CT_LBL">CT_LBL</span></div>
+      <div class="q-title">SECURE<span data-t="CT_TTL">CT_TTL</span></div>
+      <p class="q-body">Submit your load<span data-t="CT_BODY">CT_BODY</span></p>
+      <div class="q-info">
+        <div class="qi-row"><div class="qi-icon">📍</div><div><div class="qi-lbl">Physical Address</div><div class="qi-val"><span data-t="C1V">C1V</span></div></div></div>
+        <div class="qi-row"><div class="qi-icon">📞</div><div><div class="qi-lbl">Phone / Dispatch</div><div class="qi-val"><span data-t="C2V">C2V</span></div></div></div>
+        <div class="qi-row"><div class="qi-icon">✉️</div><div><div class="qi-lbl">Email</div><div class="qi-val"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6b0109071f190a05181b04191f4501072b0c060a020745080406">[email&#160;protected]</a></div></div></div>
+        <div class="qi-row"><div class="qi-icon">🛡️</div><div><div class="qi-lbl">MC# / DOT</div><div class="qi-val"><span data-t="C4V">C4V</span></div></div></div>
+      </div>
+    </div>
+    <div class="q-form reveal" style="transition-delay:.12s">
+      <div class="f-row">
+        <div class="f-field"><label>Full Name</label><input type="text" placeholder="Your name"></div>
+        <div class="f-field"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+      </div>
+      <div class="f-row">
+        <div class="f-field"><label>Origin</label><input type="text" placeholder="City, State / Zip"></div>
+        <div class="f-field"><label>Destination</label><input type="text" placeholder="City, State / Zip"></div>
+      </div>
+      <div class="f-row">
+        <div class="f-field">
+          <label>Freight Type</label>
+          <select><option value="" disabled selected>Select type</option><option>General Freight</option><option>Metal Sheet / Steel Coil</option><option>Building Materials</option><option>FTL — Full Truckload</option><option>LTL — Less Than Truckload</option></select>
+        </div>
+        <div class="f-field"><label>Est. Weight (lbs)</label><input type="text" placeholder="e.g. 42,000"></div>
+      </div>
+      <div class="f-field full" style="margin-bottom:0">
+        <label>Cargo Description</label>
+        <textarea placeholder="Describe your cargo, pickup window, special requirements, etc."></textarea>
+      </div>
+      <button class="f-submit"><span>Submit Freight Request →</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">
+        <img src="https://i.postimg.cc/WpZLKFqy/mexicoflagonly.png" alt="JBL">
+        <span class="footer-name"><span data-t="CO_NAME">CO_NAME</span></span>
+      </div>
+      <div class="footer-locs"><span data-t="CO_ADDR">CO_ADDR</span></div>
+    </div>
+    <div class="footer-mid">
+      <div class="footer-contact-row"><span class="fci">📞</span><a href="tel:<span data-t="CO_PHONE_NUM">CO_PHONE_NUM</span>"><span data-t="CO_PHONE">CO_PHONE</span></a></div>
+      <div class="footer-contact-row"><span class="fci">✉️</span><a href="/cdn-cgi/l/email-protection#bdd7dfd1c9cfdcd3cecdd2cfc993d7d1fddad0dcd4d193ded2d0"><span class="__cf_email__" data-cfemail="b9d3dbd5cdcbd8d7cac9d6cbcd97d3d5f9ded4d8d0d597dad6d4">[email&#160;protected]</span></a></div>
+      <div class="footer-contact-row"><span class="fci">🛡</span><span>MC# <span data-t="CO_MC">CO_MC</span> · Interstate Carrier</span></div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-dots">
+        <div class="fdot" style="background:var(--g)"></div>
+        <div class="fdot" style="background:#fff"></div>
+        <div class="fdot" style="background:var(--r)"></div>
+      </div>
+      <div class="footer-copy"><span data-t="CO_COPY">CO_COPY</span></div>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── CURSOR
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+});
+(function loop(){
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,select,input,textarea').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('cur-hover'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('cur-hover'));
+});
+
+// ── NAV — transparent until scrolled
+const navEl=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  navEl.classList.toggle('scrolled', window.scrollY>60);
+}, {passive:true});
+
+// ── TICK MARKS
+const tc=document.getElementById('ticks');
+if(tc){ for(let i=0;i<24;i++){const d=document.createElement('div');d.className='tick';d.style.transform=`rotate(${i*15}deg)`;tc.appendChild(d);} }
+
+// ── SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+  });
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── STAT COUNTER ANIMATION
+function animateCount(el, target, suffix=''){
+  let start=0, duration=1600;
+  const step=ts=>{
+    if(!start) start=ts;
+    const p=Math.min((ts-start)/duration,1);
+    const ease=1-Math.pow(1-p,4);
+    el.textContent=Math.floor(ease*target)+(p<1?'':suffix);
+    if(p<1) requestAnimationFrame(step);
+    else el.textContent=target+suffix;
+  };
+  requestAnimationFrame(step);
+}
+const counterObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target.querySelector('[data-count]');
+      if(el){
+        const t=parseInt(el.dataset.count);
+        const s=el.dataset.suffix||'';
+        animateCount(el,t,s);
+      }
+      counterObs.unobserve(e.target);
+    }
+  });
+},{threshold:.3});
+document.querySelectorAll('.stat').forEach(s=>counterObs.observe(s));
+const sgEl=document.querySelector('.stat.sg [data-count]');
+if(sgEl) sgEl.dataset.suffix='K';
+</script>
+
+<script>
+(function(){
+  var BIN_ID  = 'PASTE_BIN_ID_HERE';
+  var API_KEY = 'PASTE_API_KEY_HERE';
+  var DEFS = {"CO_NAME":"JBL Transport","CO_TAG":"Bi-National Logistics","CO_MC":"702102","CO_PHONE":"(623) 210-4941","CO_PHONE_NUM":"6232104941","CO_EMAIL":"jbltransport.jl@gmail.com","CO_ADDR":"20915 W Carver Rd, Buckeye, AZ 85326","CO_COPY":"© 2025 JBL Transport Solutions. All rights reserved.","CLR_G":"#006847","CLR_R":"#CE1126","CLR_BG":"#050505","H_EYE":"MC# 702102 · USDOT Active · Authorized for Hire","H_L1":"JBL","H_L2":"TRANSPORT","H_DIV":"Interstate Carrier · Buckeye, AZ","H_DESC":"General freight, metal sheet & building materials — moved fast, moved right. Licensed, insured, and running strong across the US–MX corridor.","H_BTN1":"Dispatch a Load","H_BTN2":"Our Services","S1V":"163K","S1L":"Miles in 2025","S2V":"$1M","S2L":"Insurance Coverage","S3V":"702102","S3L":"MC Number","S4V":"24/7","S4L":"Live Dispatch","SV_LBL":"What We Haul","SV_TTL":"OUR<br>SERVICES","SV_INTRO":"Interstate carrier authorized for hire — running general freight, materials, and metal across the US–MX corridor from our Buckeye, AZ base.","SV1T":"General Freight","SV1B":"Full and partial truckload general freight, hauled on time across interstate routes. Dry van operations with careful cargo handling and real-time communication throughout every load.","SV2T":"Building Materials","SV2B":"Lumber, drywall, roofing, and construction supplies moved with precision. We understand job-site schedules and deliver when your crew needs it — no delays, no excuses.","SV3T":"Metal Sheet","SV3B":"Coil, sheet, and structural steel handled safely and secured properly. Our drivers know how to strap and protect metal loads — protecting your product and keeping roads safe.","T1L":"USDOT Active","T1V":"Federally Authorized","T2L":"Primary Insurance","T2V":"$1,000,000 BI&PD","T3L":"MC# 702102","T3V":"Authorized for Hire","T4L":"163,000 Miles","T4V":"Logged in 2025","T5L":"Safety Record","T5V":"0 Unsafe Driving Violations","RT_LBL":"Operating Territory","R1N":"Buckeye","R1S":"Arizona · Home Base","R1A":"I-10 West","R2N":"Los Angeles","R2S":"California · USA","R2A":"I-10 East","R3N":"El Paso","R3S":"Texas · Border","R3A":"I-8 / I-19","R4N":"San Diego","R4S":"California · Port","CT_LBL":"Book Now","CT_TTL":"SECURE<br>YOUR<br>RATE","CT_BODY":"Submit your load details and we'll get back to you fast. Direct line to dispatch — no middlemen, no runaround.","C1V":"20915 W Carver Rd, Buckeye, AZ 85326","C2V":"(623) 210-4941","C3V":"jbltransport.jl@gmail.com","C3V":"jbltransport.jl@gmail.com","C4V":"MC# 702102 · Active Carrier"};
+
+    function applyData(d) {
+    var R = document.documentElement;
+    if(d.CLR_G) R.style.setProperty('--g', d.CLR_G);
+    if(d.CLR_R) R.style.setProperty('--r', d.CLR_R);
+    if(d.CLR_BG){ R.style.setProperty('--black', d.CLR_BG); document.body.style.background=d.CLR_BG; }
+
+    // Update all data-t token spans
+    document.querySelectorAll('[data-t]').forEach(function(el){
+      var k=el.getAttribute('data-t'), v=d[k];
+      if(v===undefined) return;
+      if(k==='CO_EMAIL'){ var a=el.closest('a'); if(a) a.href='mailto:'+v; }
+      if(k==='CO_PHONE'){ var a=el.closest('a'); if(a) a.href='tel:'+v.replace(/\D/g,''); }
+      if(k==='CO_PHONE_NUM'){ var a=el.closest('a'); if(a){ a.href='tel:'+v; return; } }
+      if(k==='SV_TTL'||k==='CT_TTL') el.innerHTML=v;
+      else el.textContent=v;
+    });
+
+    // Stat values — S1V/S2V/S3V/S4V map to the 4 stat-n elements in order
+    var statEls = document.querySelectorAll('.stat-n');
+    var statKeys = ['S1V','S2V','S3V','S4V'];
+    statEls.forEach(function(el,i){
+      if(d[statKeys[i]] !== undefined) el.textContent = d[statKeys[i]];
+    });
+
+    // Page title
+    if(d.CO_NAME||d.CO_TAG) document.title=(d.CO_NAME||'JBL Transport')+' | '+(d.CO_TAG||'Bi-National Logistics');
+  }
+
+  applyData(DEFS);
+
+  if(BIN_ID!=='69b856afb7ec241ddc742c39'){
+    fetch('https://api.jsonbin.io/v3/b/'+BIN_ID+'/latest',{headers:{'$2a$10$73.ukFlfRQNT7du2w2QAHO8FGnwnWnVjNxjEuc22rCwq29OlelBoe':API_KEY}})
+    .then(function(r){return r.json();})
+    .then(function(j){if(j.record&&Object.keys(j.record).length>0) applyData(j.record);})
+    .catch(function(){});
+  }
+})();
+</script>
+</body>
+</html>
