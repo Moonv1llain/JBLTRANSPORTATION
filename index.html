@@ -10,8 +10,9 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --g:#006847; --r:#CE1126; --white:#EEEEE9;
-  --black:#050505; --dim:#0c0c0c; --line:rgba(255,255,255,.055);
+  --g:#006847; --r:#CE1126; --acc:#3b82f6;
+  --white:#EEEEE9; --black:#050505; --dim:#0c0c0c;
+  --line:rgba(255,255,255,.055);
   --ease-out-expo:cubic-bezier(.16,1,.3,1);
   --ease-in-out-quart:cubic-bezier(.76,0,.24,1);
 }
@@ -22,7 +23,14 @@ body{
   font-family:'DM Sans',sans-serif;
   background:var(--black); color:var(--white);
   overflow-x:hidden; cursor:none;
+ 
 }
+
+@media(hover:none),(pointer:coarse){
+  body{ cursor:auto }
+  #cur,#cur-ring{ display:none!important }
+}
+
 
 /* ── CURSOR ─────────────────────────────── */
 #cur{
@@ -41,7 +49,7 @@ body{
   transition:width .4s var(--ease-out-expo), height .4s var(--ease-out-expo), border-color .3s;
 }
 body.cur-hover #cur{ width:14px; height:14px; background:var(--white); }
-body.cur-hover #cur-ring{ width:48px; height:48px; border-color:rgba(255,255,255,.5); }
+body.cur-hover #cur-ring{ width:48px; height:48px; border-color:var(--cur-ring-hover); }
 
 /* ── FLAG BAR ────────────────────────────── */
 .flag-bar{
@@ -68,7 +76,7 @@ nav.scrolled{
 .nav-logo{height:36px;width:auto;filter:drop-shadow(0 0 10px rgba(206,17,38,.3));display:block}
 .nav-brand{display:flex;flex-direction:column;line-height:1;gap:3px}
 .brand-name{font-family:'Anton',sans-serif;font-size:21px;letter-spacing:.12em;color:var(--white)}
-.brand-sub{font-family:'Teko',sans-serif;font-size:9px;font-weight:400;letter-spacing:.55em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.brand-sub{font-family:'Teko',sans-serif;font-size:9px;font-weight:400;letter-spacing:.55em;text-transform:uppercase;color:var(--fg25)}
 .nav-links{display:flex;align-items:center;gap:32px;list-style:none}
 .nav-links a{
   font-family:'Teko',sans-serif; font-size:13px; font-weight:500;
@@ -152,7 +160,7 @@ nav.scrolled{
 /* staggered load-in */
 .hero-eyebrow{
   font-family:'Teko',sans-serif; font-size:13px; font-weight:600;
-  letter-spacing:.5em; text-transform:uppercase; color:rgba(255,255,255,.75);
+  letter-spacing:.5em; text-transform:uppercase; color:rgba(255,255,255,.55);
   margin-bottom:24px;
   opacity:0; transform:translateY(16px);
   animation:hero-in .9s var(--ease-out-expo) .1s forwards;
@@ -172,11 +180,11 @@ nav.scrolled{
 }
 .hero-divider-line{
   height:1px; flex:1; max-width:60px;
-  background:linear-gradient(90deg,rgba(255,255,255,.18),transparent);
+  background:linear-gradient(90deg,var(--divline),transparent);
 }
 .hero-divider span{
   font-family:'Teko',sans-serif; font-size:12px; font-weight:500;
-  letter-spacing:.4em; text-transform:uppercase; color:rgba(255,255,255,.65);
+  letter-spacing:.4em; text-transform:uppercase; color:rgba(255,255,255,.45);
   white-space:nowrap;
 }
 
@@ -216,10 +224,10 @@ nav.scrolled{
 .btn-ghost{
   font-family:'Teko',sans-serif; font-size:12px; font-weight:500;
   letter-spacing:.35em; text-transform:uppercase; text-decoration:none;
-  color:rgba(255,255,255,.35); border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.35); border-bottom:1px solid rgba(255,255,255,.08);
   padding:14px 30px; transition:color .3s, border-color .3s, transform .2s;
 }
-.btn-ghost:hover{color:var(--white);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+.btn-ghost:hover{color:var(--white);border-color:var(--divline);transform:translateY(-1px)}
 
 /* HERO RIGHT */
 .hero-right{
@@ -230,8 +238,8 @@ nav.scrolled{
   position:relative; width:520px; height:520px;
   display:flex; align-items:center; justify-content:center;
 }
-.logo-ring{position:absolute;inset:-20px;border-radius:50%;border:1px dashed rgba(255,255,255,.06);animation:spin 35s linear infinite}
-.logo-ring-2{position:absolute;inset:14px;border-radius:50%;border:1px solid rgba(255,255,255,.03);animation:spin 22s linear infinite reverse}
+.logo-ring{position:absolute;inset:-20px;border-radius:50%;border:1px dashed var(--fg06);animation:spin 35s linear infinite}
+.logo-ring-2{position:absolute;inset:14px;border-radius:50%;border:1px solid var(--fg025);animation:spin 22s linear infinite reverse}
 .logo-ring-3{position:absolute;inset:60px;border-radius:50%;border:1px dashed rgba(206,17,38,.1);animation:spin 18s linear infinite}
 .logo-glow-g{position:absolute;left:-80px;top:50%;transform:translateY(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(0,104,71,.2) 0%,transparent 70%);pointer-events:none}
 .logo-glow-r{position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:300px;height:300px;background:radial-gradient(circle,rgba(206,17,38,.2) 0%,transparent 70%);pointer-events:none}
@@ -243,7 +251,7 @@ nav.scrolled{
 }
 @keyframes logo-in{to{opacity:1}}
 .tick{position:absolute;top:50%;left:50%;transform-origin:0 0;pointer-events:none}
-.tick::after{content:'';display:block;width:1px;height:8px;background:rgba(255,255,255,.08);position:absolute;top:-222px;left:0}
+.tick::after{content:'';display:block;width:1px;height:8px;background:var(--tick-color);position:absolute;top:-222px;left:0}
 
 /* mobile logo */
 .hero-mobile-logo{display:none}
@@ -284,7 +292,7 @@ nav.scrolled{
   transform:scaleX(0); transform-origin:left; transition:transform .6s var(--ease-out-expo);
 }
 .stat.sg .stat-bar{background:linear-gradient(90deg,var(--g),rgba(0,104,71,.3))}
-.stat.sw .stat-bar{background:linear-gradient(90deg,rgba(255,255,255,.8),transparent)}
+.stat.sw .stat-bar{background:linear-gradient(90deg,var(--dw-bg),transparent)}
 .stat.sr .stat-bar{background:linear-gradient(90deg,var(--r),rgba(206,17,38,.3))}
 .stat.sb .stat-bar{background:linear-gradient(90deg,#3b82f6,rgba(59,130,246,.3))}
 .stat:hover{background:rgba(255,255,255,.015)}
@@ -294,17 +302,17 @@ nav.scrolled{
   letter-spacing:.02em; line-height:1; margin-bottom:8px;
 }
 .stat.sg .stat-n{color:var(--g)}
-.stat.sw .stat-n{color:#fff}
+.stat.sw .stat-n{color:var(--white)}
 .stat.sr .stat-n{color:var(--r)}
 .stat.sb .stat-n{color:#3b82f6}
-.stat-l{font-family:'Teko',sans-serif;font-size:10px;font-weight:400;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.stat-l{font-family:'Teko',sans-serif;font-size:10px;font-weight:400;letter-spacing:.4em;text-transform:uppercase;color:var(--fg25)}
 
 /* ── SERVICES ────────────────────────────── */
-.services-section{padding:120px 72px;max-width:1300px;margin:0 auto}
+.services-section{padding:120px 72px;max-width:1300px;margin:0 auto;transition:background .35s}
 .sec-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:72px;gap:40px}
 .sec-label{font-family:'Teko',sans-serif;font-size:10px;font-weight:600;letter-spacing:.65em;text-transform:uppercase;color:var(--g);margin-bottom:14px}
 .sec-title{font-family:'Anton',sans-serif;font-size:clamp(48px,6vw,72px);line-height:.88;letter-spacing:.02em}
-.sec-body{font-size:14px;font-weight:400;line-height:1.85;color:rgba(255,255,255,.65);max-width:300px}
+.sec-body{font-size:14px;font-weight:400;line-height:1.85;color:rgba(255,255,255,.55);max-width:300px}
 
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
 .svc-card{
@@ -330,18 +338,18 @@ nav.scrolled{
 .svc-card:hover::after{opacity:1}
 .svc-card:hover{background:#0f0f0f;transform:translateY(-2px)}
 
-.svc-num{font-family:'Anton',sans-serif;font-size:80px;position:absolute;top:28px;right:28px;color:rgba(255,255,255,.025);line-height:1;pointer-events:none}
+.svc-num{font-family:'Anton',sans-serif;font-size:80px;position:absolute;top:28px;right:28px;color:var(--fg025);line-height:1;pointer-events:none}
 .svc-icon{font-size:26px;margin-bottom:28px;display:block}
 .svc-title{font-family:'Teko',sans-serif;font-size:21px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;color:var(--white)}
-.svc-body{font-size:14px;font-weight:400;line-height:1.8;color:rgba(255,255,255,.72)}
+.svc-body{font-size:14px;font-weight:400;line-height:1.8;color:var(--fg55)}
 .svc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:28px}
 .svc-tag{
   font-family:'Teko',sans-serif;font-size:9px;font-weight:500;letter-spacing:.3em;
   text-transform:uppercase;padding:4px 10px;
-  border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.65);
+  border:1px solid var(--divline);color:rgba(255,255,255,.55);
   transition:border-color .3s, color .3s;
 }
-.svc-card:hover .svc-tag{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.45)}
+.svc-card:hover .svc-tag{border-color:rgba(255,255,255,.08);color:var(--fg45)}
 
 /* ── ROUTE ───────────────────────────────── */
 .route-section{
@@ -358,7 +366,7 @@ nav.scrolled{
 }
 .route-lbl{
   font-family:'Teko',sans-serif;font-size:13px;font-weight:600;
-  letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.65);
+  letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.55);
   text-align:center;margin-bottom:52px;position:relative;z-index:2;
 }
 .route-inner{position:relative;z-index:2;display:flex;align-items:center;justify-content:center}
@@ -372,19 +380,19 @@ nav.scrolled{
 .db{background:#3b82f6;box-shadow:0 0 14px rgba(59,130,246,.5)}
 .r-city:hover .r-dot::after{opacity:1}
 .r-name{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.05em;margin-bottom:4px;transition:color .3s}
-.r-state{font-family:'Teko',sans-serif;font-size:11px;font-weight:400;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,255,255,.55)}
-.r-city:hover .r-name{color:rgba(255,255,255,.7)}
+.r-state{font-family:'Teko',sans-serif;font-size:11px;font-weight:400;letter-spacing:.35em;text-transform:uppercase;color:var(--fg45)}
+.r-city:hover .r-name{color:var(--fg55)}
 .r-arrow{flex:1;max-width:110px;display:flex;flex-direction:column;align-items:center;gap:6px}
-.r-line{width:100%;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,.25),rgba(255,255,255,.06));position:relative}
-.r-line::after{content:'▸';position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:7px;color:rgba(255,255,255,.25)}
-.r-lbl{font-family:'Teko',sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.r-line{width:100%;height:1px;background:linear-gradient(90deg,var(--fg06),var(--fg25),var(--fg06));position:relative}
+.r-line::after{content:'▸';position:absolute;right:-4px;top:50%;transform:translateY(-50%);font-size:7px;color:var(--fg25)}
+.r-lbl{font-family:'Teko',sans-serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--fg55)}
 
 /* ── QUOTE ───────────────────────────────── */
-.quote-section{padding:140px 72px}
+.quote-section{padding:140px 72px;background:var(--black);transition:background .35s}
 .quote-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:96px;align-items:start}
 .q-left .sec-label{margin-bottom:12px}
 .q-title{font-family:'Anton',sans-serif;font-size:clamp(52px,5.5vw,72px);line-height:.88;letter-spacing:.02em;margin-bottom:24px}
-.q-body{font-size:15px;font-weight:400;line-height:1.85;color:rgba(255,255,255,.7);margin-bottom:48px}
+.q-body{font-size:15px;font-weight:400;line-height:1.85;color:rgba(255,255,255,.55);margin-bottom:48px}
 .q-info{display:flex;flex-direction:column;gap:20px}
 .qi-row{display:flex;align-items:flex-start;gap:14px}
 .qi-icon{
@@ -395,14 +403,14 @@ nav.scrolled{
 }
 .qi-row:hover .qi-icon{border-color:var(--g);background:rgba(0,104,71,.08)}
 .qi-lbl{font-family:'Teko',sans-serif;font-size:9px;font-weight:500;letter-spacing:.45em;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:3px}
-.qi-val{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.75);transition:color .3s}
+.qi-val{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.55);transition:color .3s}
 .qi-row:hover .qi-val{color:var(--white)}
 
 /* form */
 .q-form{
   background:rgba(255,255,255,.02);
   padding:52px;
-  border:1px solid var(--line);
+  border:1px solid rgba(255,255,255,.07);
   position:relative;
   backdrop-filter:blur(4px);
 }
@@ -419,10 +427,16 @@ nav.scrolled{
 }
 .f-row{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:22px}
 .f-field{display:flex;flex-direction:column;gap:7px}
+.f-city-row{display:grid;grid-template-columns:1fr auto;gap:0;border-bottom:1px solid rgba(255,255,255,.08);transition:border-color .3s}
+.f-city-row:focus-within{border-bottom-color:var(--g)}
+.f-city-row input{border-bottom:none!important;padding-right:8px}
+.f-state-sel{background:transparent;border:none;border-left:1px solid rgba(255,255,255,.08);padding:11px 8px;color:rgba(255,255,255,.6);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;outline:none;appearance:none;cursor:pointer;width:68px;text-align:center}
+.f-state-sel option{background:#111;color:#fff}
+.f-char-count{font-family:'Teko',sans-serif;font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.2);text-align:right;margin-top:4px}
 .f-field.full{grid-column:1/-1}
 .f-field label{
   font-family:'Teko',sans-serif;font-size:11px;font-weight:600;
-  letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.6);
+  letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.45);
   transition:color .3s;
 }
 .f-field:focus-within label{color:var(--g)}
@@ -436,7 +450,7 @@ nav.scrolled{
 .f-field input::placeholder,.f-field textarea::placeholder{color:rgba(255,255,255,.35)}
 .f-field input:focus,.f-field textarea:focus{border-bottom-color:var(--g)}
 .f-field select{color:rgba(255,255,255,.6);cursor:none}
-.f-field select option{background:#111;color:#fff}
+.f-field select option{background:#111;color:var(--white)}
 .f-field textarea{resize:none;height:90px}
 .f-submit{
   margin-top:32px; width:100%; border:none;
@@ -470,10 +484,10 @@ footer::before{
 }
 .footer-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:32px;max-width:1300px;margin:0 auto}
 .footer-brand{display:flex;align-items:center;gap:14px}
-.footer-brand img{height:44px;opacity:.65;filter:drop-shadow(0 0 8px rgba(206,17,38,.25));transition:opacity .3s}
+.footer-brand img{height:44px;opacity:.65;filter:drop-shadow(0 0 8px rgba(206,17,38,.25));transition:opacity .3s, filter .3s}
 .footer-brand:hover img{opacity:.9}
 .footer-name{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:.1em;color:rgba(255,255,255,.45);transition:color .3s}
-.footer-brand:hover .footer-name{color:rgba(255,255,255,.7)}
+.footer-brand:hover .footer-name{color:var(--fg55)}
 .footer-locs{font-family:'Teko',sans-serif;font-size:9px;font-weight:400;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.16);margin-top:8px}
 .footer-right{text-align:right}
 .footer-dots{display:flex;gap:4px;align-items:center;justify-content:flex-end;margin-bottom:10px}
@@ -500,7 +514,7 @@ footer::before{
   background:rgba(0,104,71,.08);
 }
 .trust-lbl{font-family:'Teko',sans-serif;font-size:9px;font-weight:600;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:3px}
-.trust-val{font-size:13px;font-weight:500;color:rgba(255,255,255,.75)}
+.trust-val{font-size:13px;font-weight:500;color:var(--fg55)}
 .trust-sep{width:1px;height:36px;background:var(--line);flex-shrink:0}
 @media(max-width:960px){
   .trust-strip{padding:36px 24px}
@@ -511,7 +525,7 @@ footer::before{
 
 /* ── FOOTER CONTACT ──────────────────────── */
 .footer-mid{display:flex;flex-direction:column;gap:10px}
-.footer-contact-row{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.35)}
+.footer-contact-row{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--fg35)}
 .footer-contact-row a{color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s}
 .footer-contact-row a:hover{color:var(--white)}
 .fci{font-size:12px;opacity:.5}
@@ -607,7 +621,7 @@ footer::before{
     <div class="hero-divider">
       <div class="hero-divider-line"></div>
       <span><span data-t="H_DIV">H_DIV</span></span>
-      <div class="hero-divider-line" style="background:linear-gradient(270deg,rgba(255,255,255,.18),transparent)"></div>
+      <div class="hero-divider-line" style="background:linear-gradient(270deg,var(--divline),transparent)"></div>
     </div>
 
     <p class="hero-desc"><span data-t="H_DESC">H_DESC</span></p>
@@ -766,31 +780,93 @@ footer::before{
       <div class="q-info">
         <div class="qi-row"><div class="qi-icon">📍</div><div><div class="qi-lbl">Physical Address</div><div class="qi-val"><span data-t="C1V">C1V</span></div></div></div>
         <div class="qi-row"><div class="qi-icon">📞</div><div><div class="qi-lbl">Phone / Dispatch</div><div class="qi-val"><span data-t="C2V">C2V</span></div></div></div>
-        <div class="qi-row"><div class="qi-icon">✉️</div><div><div class="qi-lbl">Email</div><div class="qi-val"><a href="mailto:jbltransport.jl@gmail.com"><span data-t="C3V">jbltransport.jl@gmail.com</span></a></div></div></div>
+        <div class="qi-row"><div class="qi-icon">✉️</div><div><div class="qi-lbl">Email</div><div class="qi-val"><a href="/cdn-cgi/l/email-protection#1b7179776f697a75686b74696f3571775b7c767a727735787476"><span data-t="C3V"><span class="__cf_email__" data-cfemail="711b131d0503101f02011e03055f1b1d31161c10181d5f121e1c">[email&#160;protected]</span></span></a></div></div></div>
         <div class="qi-row"><div class="qi-icon">🛡️</div><div><div class="qi-lbl">MC# / DOT</div><div class="qi-val"><span data-t="C4V">C4V</span></div></div></div>
       </div>
     </div>
     <div class="q-form reveal" style="transition-delay:.12s">
       <div class="f-row">
-        <div class="f-field"><label>Full Name</label><input type="text" placeholder="Your name"></div>
-        <div class="f-field"><label>Email</label><input type="email" placeholder="you@company.com"></div>
+        <div class="f-field"><label>Full Name *</label><input id="fld-name" type="text" placeholder="John Smith" maxlength="60" autocomplete="name"></div>
+        <div class="f-field"><label>Email *</label><input id="fld-email" type="email" placeholder="you@company.com" autocomplete="email"></div>
       </div>
       <div class="f-row">
-        <div class="f-field"><label>Origin</label><input type="text" placeholder="City, State / Zip"></div>
-        <div class="f-field"><label>Destination</label><input type="text" placeholder="City, State / Zip"></div>
+        <div class="f-field"><label>Phone *</label><input id="fld-phone" type="tel" placeholder="(555) 000-0000" maxlength="14" autocomplete="tel" inputmode="numeric"></div>
+        <div class="f-field"><label>Company</label><input id="fld-company" type="text" placeholder="Your company name" maxlength="80" autocomplete="organization"></div>
       </div>
       <div class="f-row">
         <div class="f-field">
-          <label>Freight Type</label>
-          <select><option value="" disabled selected>Select type</option><option>General Freight</option><option>Metal Sheet / Steel Coil</option><option>Building Materials</option><option>FTL — Full Truckload</option><option>LTL — Less Than Truckload</option></select>
+          <label>Origin City *</label>
+          <div class="f-city-row">
+            <input id="fld-origin-city" type="text" placeholder="City" maxlength="50">
+            <select id="fld-origin-state" class="f-state-sel">
+              <option value="" disabled selected>State</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+              <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+              <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+              <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+              <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+              <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+              <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+              <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+              <option>MX</option>
+            </select>
+          </div>
         </div>
-        <div class="f-field"><label>Est. Weight (lbs)</label><input type="text" placeholder="e.g. 42,000"></div>
+        <div class="f-field">
+          <label>Destination City *</label>
+          <div class="f-city-row">
+            <input id="fld-dest-city" type="text" placeholder="City" maxlength="50">
+            <select id="fld-dest-state" class="f-state-sel">
+              <option value="" disabled selected>State</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option><option>CA</option>
+              <option>CO</option><option>CT</option><option>DE</option><option>FL</option><option>GA</option>
+              <option>HI</option><option>ID</option><option>IL</option><option>IN</option><option>IA</option>
+              <option>KS</option><option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option><option>MO</option>
+              <option>MT</option><option>NE</option><option>NV</option><option>NH</option><option>NJ</option>
+              <option>NM</option><option>NY</option><option>NC</option><option>ND</option><option>OH</option>
+              <option>OK</option><option>OR</option><option>PA</option><option>RI</option><option>SC</option>
+              <option>SD</option><option>TN</option><option>TX</option><option>UT</option><option>VT</option>
+              <option>VA</option><option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+              <option>MX</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="f-row">
+        <div class="f-field">
+          <label>Freight Type *</label>
+          <select id="fld-type">
+            <option value="" disabled selected>Select type</option>
+            <option>General Freight</option>
+            <option>Metal Sheet / Steel Coil</option>
+            <option>Building Materials</option>
+            <option>FTL — Full Truckload</option>
+            <option>LTL — Less Than Truckload</option>
+          </select>
+        </div>
+        <div class="f-field">
+          <label>Est. Weight</label>
+          <select id="fld-weight">
+            <option value="" disabled selected>Select range</option>
+            <option>Under 5,000 lbs</option>
+            <option>5,000 – 10,000 lbs</option>
+            <option>10,000 – 20,000 lbs</option>
+            <option>20,000 – 35,000 lbs</option>
+            <option>35,000 – 44,000 lbs</option>
+            <option>44,000+ lbs (max legal)</option>
+            <option>Overweight / Permit Load</option>
+          </select>
+        </div>
       </div>
       <div class="f-field full" style="margin-bottom:0">
         <label>Cargo Description</label>
-        <textarea placeholder="Describe your cargo, pickup window, special requirements, etc."></textarea>
+        <textarea id="fld-desc" maxlength="500" placeholder="Describe your cargo, pickup window, special requirements…"></textarea>
+        <div class="f-char-count" id="desc-count">0 / 500</div>
       </div>
-      <button class="f-submit"><span>Submit Freight Request →</span></button>
+      <button class="f-submit" id="quote-submit"><span id="quote-btn-text">Submit Freight Request →</span></button>
     </div>
   </div>
 </section>
@@ -807,7 +883,7 @@ footer::before{
     </div>
     <div class="footer-mid">
       <div class="footer-contact-row"><span class="fci">📞</span><a href="tel:6232104941"><span data-t="CO_PHONE">(623) 210-4941</span></a></div>
-      <div class="footer-contact-row"><span class="fci">✉️</span><a href="mailto:jbltransport.jl@gmail.com"><span data-t="CO_EMAIL">jbltransport.jl@gmail.com</span></a></div>
+      <div class="footer-contact-row"><span class="fci">✉️</span><a href="/cdn-cgi/l/email-protection#f09a929c8482919e83809f8284de9a9cb0979d91999cde939f9d"><span data-t="CO_EMAIL"><span class="__cf_email__" data-cfemail="761c141a020417180506190402581c1a36111b171f1a5815191b">[email&#160;protected]</span></span></a></div>
       <div class="footer-contact-row"><span class="fci">🛡</span><span>MC# <span data-t="CO_MC">702102</span> · Interstate Carrier</span></div>
     </div>
     <div class="footer-right">
@@ -820,7 +896,7 @@ footer::before{
     </div>
   </div>
 </footer>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── CURSOR
 const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
 let mx=0,my=0,rx=0,ry=0;
@@ -911,13 +987,173 @@ if(sgEl) sgEl.dataset.suffix='K';
     var bn=document.querySelector('.brand-name');if(bn&&d.CO_NAME)bn.textContent=d.CO_NAME;
     var bs=document.querySelector('.brand-sub');if(bs&&d.CO_TAG)bs.textContent=d.CO_TAG;
     var fn=document.querySelector('.footer-name');if(fn&&d.CO_NAME)fn.textContent=d.CO_NAME;
-    if(d.CO_NAME||d.CO_TAG)document.title=(d.CO_NAME||'JBL Transport')+' | '+(d.CO_TAG||'Bi-National Logistics');
+    if(d.CO_NAME||d.CO_TAG){document.title=(d.CO_NAME||'JBL Transport')+' | '+(d.CO_TAG||'Bi-National Logistics');}
+    // routes
+    var rn=document.querySelectorAll('.r-name'),rs=document.querySelectorAll('.r-state'),ra=document.querySelectorAll('.r-lbl');
+    var rkeys=[['R1N','R1S','R1A'],['R2N','R2S','R2A'],['R3N','R3S','R3A'],['R4N','R4S']];
+    rkeys.forEach(function(k,i){
+      if(k[0]&&d[k[0]]&&rn[i])rn[i].textContent=d[k[0]];
+      if(k[1]&&d[k[1]]&&rs[i])rs[i].textContent=d[k[1]];
+      if(k[2]&&d[k[2]]&&ra[i])ra[i].textContent=d[k[2]];
+    });
+    // trust
+    var tl=document.querySelectorAll('.trust-lbl'),tv=document.querySelectorAll('.trust-val');
+    [['T1L','T1V'],['T2L','T2V'],['T3L','T3V'],['T4L','T4V'],['T5L','T5V']].forEach(function(k,i){
+      if(d[k[0]]&&tl[i])tl[i].textContent=d[k[0]];
+      if(d[k[1]]&&tv[i])tv[i].textContent=d[k[1]];
+    });
+    // svc titles/bodies
+    var st=document.querySelectorAll('.svc-title'),sb=document.querySelectorAll('.svc-body');
+    [['SV1T','SV1B'],['SV2T','SV2B'],['SV3T','SV3B']].forEach(function(k,i){
+      if(d[k[0]]&&st[i])st[i].textContent=d[k[0]];
+      if(d[k[1]]&&sb[i])sb[i].textContent=d[k[1]];
+    });
+    // svc tags
+    ['SV1G','SV2G','SV3G'].forEach(function(k,i){
+      if(!d[k])return;
+      var card=document.querySelectorAll('.svc-tags')[i];
+      if(!card)return;
+      card.innerHTML='';
+      d[k].split(',').forEach(function(tag){
+        var s=document.createElement('span');s.className='svc-tag';s.textContent=tag.trim();card.appendChild(s);
+      });
+    });
+    // footer address/copy
+    var fl=document.querySelector('.footer-locs');if(fl&&d.CO_ADDR)fl.textContent=d.CO_ADDR;
+    var fc=document.querySelector('.footer-copy');if(fc&&d.CO_COPY)fc.textContent=d.CO_COPY;
+    // contact info rows
+    var qv=document.querySelectorAll('.qi-val');
+    [d.C1V,d.C2V,d.C3V,d.C4V].forEach(function(v,i){if(v&&qv[i])qv[i].textContent=v;});
+    // section labels
+    var rtLbl=document.querySelector('.route-lbl');if(rtLbl&&d.RT_LBL)rtLbl.textContent=d.RT_LBL;
   }
   applyData(DEFS);
   fetch('https://api.jsonbin.io/v3/b/'+BIN_ID+'/latest',{headers:{'X-Master-Key':API_KEY}})
-  .then(function(r){return r.json();})
-  .then(function(j){if(j.record&&Object.keys(j.record).length>0)applyData(j.record);})
-  .catch(function(){});
+    .then(function(r){return r.json();})
+    .then(function(j){if(j.record&&Object.keys(j.record).length)applyData(j.record);})
+    .catch(function(){});
+})();
+</script>
+
+<script>
+// ── QUOTE FORM SUBMISSION
+(function(){
+  // ─── SETUP: Create a bin at jsonbin.io with content {"quotes":[]}
+  // ─── then paste its ID below (keep the API key the same)
+  var QUOTES_BIN = '69b888dfb7ec241ddc74cd56'; // ← REPLACE with your quotes bin ID
+  var API_KEY    = '$2a$10$73.ukFlfRQNT7du2w2QAHO8FGnwnWnVjNxjEuc22rCwq29OlelBoe';
+
+  var btn  = document.getElementById('quote-submit');
+  var btnT = document.getElementById('quote-btn-text');
+
+  function gf(id){ var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+
+  // ── Phone auto-format (xxx) xxx-xxxx
+  var phoneEl = document.getElementById('fld-phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', function(e) {
+      var digits = this.value.replace(/\D/g, '').slice(0, 10);
+      var fmt = '';
+      if (digits.length === 0) fmt = '';
+      else if (digits.length <= 3) fmt = '(' + digits;
+      else if (digits.length <= 6) fmt = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+      else fmt = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+      this.value = fmt;
+    });
+  }
+
+  // ── Textarea char counter
+  var descEl  = document.getElementById('fld-desc');
+  var countEl = document.getElementById('desc-count');
+  if (descEl && countEl) {
+    descEl.addEventListener('input', function() {
+      countEl.textContent = this.value.length + ' / 500';
+    });
+  }
+
+  btn.addEventListener('click', function(){
+    var name    = gf('fld-name');
+    var email   = gf('fld-email');
+    var phone   = gf('fld-phone');
+    var originCity  = gf('fld-origin-city');
+    var originState = gf('fld-origin-state');
+    var destCity    = gf('fld-dest-city');
+    var destState   = gf('fld-dest-state');
+    var type    = gf('fld-type');
+
+    // Build combined origin/dest strings
+    var origin = originCity && originState ? originCity + ', ' + originState : (originCity || originState);
+    var dest   = destCity   && destState   ? destCity   + ', ' + destState   : (destCity   || destState);
+
+    // Validation
+    var missing = [];
+    if (!name)   missing.push('Name');
+    if (!email)  missing.push('Email');
+    if (!phone)  missing.push('Phone');
+    if (!origin) missing.push('Origin');
+    if (!dest)   missing.push('Destination');
+    if (!type)   missing.push('Freight Type');
+
+    if (missing.length) {
+      btnT.textContent = 'Missing: ' + missing.join(', ');
+      setTimeout(function(){ btnT.textContent = 'Submit Freight Request →'; }, 2800);
+      return;
+    }
+
+    btn.disabled = true;
+    btnT.textContent = 'Sending…';
+
+    var quote = {
+      id:      Date.now(),
+      status:  'new',
+      name:    name,
+      email:   email,
+      phone:   phone,
+      company: gf('fld-company'),
+      origin:  origin,
+      dest:    dest,
+      type:    type,
+      weight:  gf('fld-weight'),
+      desc:    gf('fld-desc'),
+      date:    new Date().toISOString()
+    };
+
+    // Try to load existing quotes first; if bin missing/empty just start fresh
+    fetch('https://api.jsonbin.io/v3/b/'+QUOTES_BIN+'/latest', {
+      headers: {'X-Master-Key': API_KEY}
+    })
+    .then(function(r){ return r.ok ? r.json() : {record:{quotes:[]}}; })
+    .catch(function(){ return {record:{quotes:[]}}; })
+    .then(function(j){
+      var existing = (j.record && Array.isArray(j.record.quotes)) ? j.record.quotes : [];
+      existing.unshift(quote);
+      return fetch('https://api.jsonbin.io/v3/b/'+QUOTES_BIN, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json','X-Master-Key':API_KEY},
+        body: JSON.stringify({quotes: existing})
+      });
+    })
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(){
+      btnT.textContent = 'Request Sent ✓';
+      ['fld-name','fld-email','fld-phone','fld-company','fld-origin-city','fld-dest-city','fld-desc'].forEach(function(id){
+        var el=document.getElementById(id); if(el) el.value='';
+      });
+      ['fld-type','fld-weight','fld-origin-state','fld-dest-state'].forEach(function(id){
+        var el=document.getElementById(id); if(el) el.selectedIndex=0;
+      });
+      if (countEl) countEl.textContent = '0 / 500';
+      setTimeout(function(){ btnT.textContent='Submit Freight Request →'; btn.disabled=false; }, 3500);
+    })
+    .catch(function(err){
+      btnT.textContent = 'Error — try again';
+      btn.disabled = false;
+      setTimeout(function(){ btnT.textContent='Submit Freight Request →'; }, 3000);
+    });
+  });
 })();
 </script>
 </body>
